@@ -1,0 +1,44 @@
+using System;
+using PEG.Cst;
+
+class CFGParser : CstVisitor
+{
+    public override CstNode VisitSymbol(CstNode cstNode)
+    {
+        string symbol = cstNode[0].Value;
+
+        Console.Write(symbol); // Imprimir el símbolo en la cadena generada
+        return cstNode[0]; // Devolver el símbolo
+    }
+
+    public override CstNode VisitExpression(CstNode cstNode)
+    {
+        return cstNode[0].Accept(this);
+    }
+
+    public string Generate(CstNode cstNode)
+    {
+        Visit(cstNode);
+        return Environment.NewLine;
+    }
+}
+
+class Program
+{
+    static void Main()
+    {
+        string grammar = @"
+            S ← 'a' S 'b'
+            S ← 'a' 'b'";
+
+        string input = "aaabbb";
+
+        var parser = new Parser(grammar);
+        var cst = parser.Parse(input);
+
+        var generator = new CFGParser();
+        string generatedString = generator.Generate(cst);
+
+        Console.WriteLine("Cadena generada: " + generatedString);
+    }
+}
